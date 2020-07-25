@@ -1,0 +1,380 @@
+<!DOCTYPE html>
+<html lang="en" prefix="og: http://ogp.me/ns# fb: https://www.facebook.com/2008/fbml">
+<head>
+    <title>Coding The PGN Parser Chess - Coderita: Let's Code Clear, not Clever..</title>
+    <!-- Using the latest rendering mode for IE -->
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+
+
+<link rel="canonical" href="/pages/pgn-parser-chess-code.html">
+
+        <meta name="author" content="Mansi Sharma" />
+        <meta name="description" content="Let&#39;s try to parse a pgn file to determine final positions of pieces on Chess Board." />
+
+    <meta property="og:site_name" content="Coderita: Let's Code Clear, not Clever.." />
+    <meta property="og:type" content="article"/>
+    <meta property="og:title" content="Coding The PGN Parser Chess"/>
+    <meta property="og:url" content="/pages/pgn-parser-chess-code.html"/>
+    <meta property="og:description" content="Let&#39;s try to parse a pgn file to determine final positions of pieces on Chess Board." />
+
+
+
+    <!-- Bootstrap -->
+        <link rel="stylesheet" href="/theme/css/bootstrap.flatly.min.css" type="text/css"/>
+    <link href="/theme/css/font-awesome.min.css" rel="stylesheet">
+
+    <link href="/theme/css/pygments/native.css" rel="stylesheet">
+    <link rel="stylesheet" href="/theme/css/style.css" type="text/css"/>
+
+
+
+</head>
+<body>
+
+<div class="navbar navbar-default navbar-fixed-top" role="navigation">
+    <div class="container">
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-ex1-collapse">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a href="/" class="navbar-brand">
+Coderita: Let's Code Clear, not Clever..            </a>
+        </div>
+        <div class="collapse navbar-collapse navbar-ex1-collapse">
+            <ul class="nav navbar-nav">
+                         <li><a href="/pages/about-me.html">
+                             About Me
+                          </a></li>
+                         <li class="active"><a href="/pages/pgn-parser-chess-code.html">
+                             Coding The PGN Parser Chess
+                          </a></li>
+                        <li >
+                            <a href="/category/java.html">Java</a>
+                        </li>
+                        <li >
+                            <a href="/category/oop.html">Oop</a>
+                        </li>
+                        <li >
+                            <a href="/category/python.html">Python</a>
+                        </li>
+            </ul>
+            <ul class="nav navbar-nav navbar-right">
+            </ul>
+        </div>
+        <!-- /.navbar-collapse -->
+    </div>
+</div> <!-- /.navbar -->
+
+<!-- Banner -->
+<!-- End Banner -->
+
+<!-- Content Container -->
+<div class="container">
+    <div class="row">
+        <div class="col-sm-9">
+    <section id="content" class="body">
+        <h1 class="entry-title">Coding The PGN Parser Chess</h1>
+        
+        <div class="entry-content">
+            <h2>Setup and Pre-processing</h2>
+<p>The first step to code this problem is to know the setup of the game. So first of all we must set up the game by keeping all the white and black pieces on their respective starting positions. We would create a board view which will show that at a particular position which piece is present. Also we would create a piece view which would specify the position of each piece.</p>
+<div class="highlight"><pre><span></span><code><span class="mi">1</span><span class="w"> </span><span class="n">def</span><span class="w"> </span><span class="n">setup</span><span class="p">()</span><span class="err">:</span><span class="w"></span>
+<span class="mi">2</span><span class="w">     </span><span class="ss">&quot;&quot;&quot; create a board view and a piece view of the starting position&quot;&quot;&quot;</span><span class="w"></span>
+<span class="mi">3</span><span class="w"></span>
+<span class="mi">4</span><span class="w">     </span><span class="n">squares</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="o">[</span><span class="n">y+x for x in &quot;12345678&quot; for y in &quot;ABCDEFGH&quot;</span><span class="o">]</span><span class="w"></span>
+<span class="mi">5</span><span class="w">     </span><span class="k">start</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="ss">&quot;RNBQKBNR&quot;</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="ss">&quot;P&quot;</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="mi">8</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="ss">&quot; &quot;</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="mi">32</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="ss">&quot;p&quot;</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="mi">8</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="ss">&quot;rnbqkbnr&quot;</span><span class="w"></span>
+<span class="mi">6</span><span class="w">     </span><span class="n">board_view</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">dict</span><span class="p">(</span><span class="n">zip</span><span class="p">(</span><span class="n">squares</span><span class="p">,</span><span class="w"> </span><span class="k">start</span><span class="p">))</span><span class="w"></span>
+<span class="mi">7</span><span class="w"></span>
+<span class="mi">8</span><span class="w">     </span><span class="n">piece_view</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="err">{</span><span class="nl">_</span><span class="p">:</span><span class="err">[]</span><span class="w"> </span><span class="k">for</span><span class="w"> </span><span class="n">_</span><span class="w"> </span><span class="ow">in</span><span class="w"> </span><span class="ss">&quot;BKNPQRbknpqr&quot;</span><span class="err">}</span><span class="w"></span>
+<span class="mi">9</span><span class="w">     </span><span class="k">for</span><span class="w"> </span><span class="n">sq</span><span class="w"> </span><span class="ow">in</span><span class="w"> </span><span class="nl">board_view</span><span class="p">:</span><span class="w"></span>
+<span class="mi">10</span><span class="w">        </span><span class="n">piece</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">board_view</span><span class="o">[</span><span class="n">sq</span><span class="o">]</span><span class="w"></span>
+<span class="mi">11</span><span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="n">piece</span><span class="w"> </span><span class="o">!=</span><span class="w"> </span><span class="ss">&quot; &quot;</span><span class="err">:</span><span class="w"></span>
+<span class="mi">12</span><span class="w">            </span><span class="n">piece_view</span><span class="o">[</span><span class="n">piece</span><span class="o">]</span><span class="p">.</span><span class="n">append</span><span class="p">(</span><span class="n">sq</span><span class="p">)</span><span class="w"></span>
+<span class="mi">13</span><span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="n">board_view</span><span class="p">,</span><span class="w"> </span><span class="n">piece_view</span><span class="w"></span>
+</code></pre></div>
+
+
+<p>This would create the initial board setup.</p>
+<p>The second thing we need to do now is pre-process the pgn file, that is remove all the comments and Seven Tag Roasters (STR) from the pgn file. We can do this using using pattern matching available in python Regex and return a list of all moves.</p>
+<p>This list will be now devoid of any comments and only consists of moves. Also we would remove all the attonations and clean up the moves. Since as we have already read in the prerequisites of this problem that in the pgn file a pawn may or may not be represented by a letter so we must also keep that in mind and fix up the pawn move by attaching the "P" or "p" letter with the moves if not present.</p>
+<p>We must also process the last move seperately since there could be two cases:</p>
+<ol>
+<li>
+<p>The White wins</p>
+</li>
+<li>
+<p>The Black wins</p>
+</li>
+</ol>
+<p>If the white wins there would be no black move in the pgn file so we should handle this last move seperately.</p>
+<h2>Moving Pieces</h2>
+<p>Now, since the initial setup and the pre-processing is done, we can now move to understand the moves different pieces will make.</p>
+<p>We can observe now that almost all the pieces will behave similar to each other except the pawn. Since the moves the pawn will make will also have some other properties other than capture. The pawn also exhibits the properties of en-passant and promotion and hence it must be handeled seperately.</p>
+<p>Talking about all the other pieces, the main thing we have to do is:</p>
+<ol>
+<li>
+<p>Remove the piece that is moving from the board view of previous position.</p>
+</li>
+<li>
+<p>Add the piece that is moving to the board view of the final position.</p>
+</li>
+<li>
+<p>Add the final position to the piece view of the piece.</p>
+</li>
+<li>
+<p>Remove the previous position from the piece view of the piece.</p>
+</li>
+<li>
+<p>If a enemy piece is captured, then remove the final position of our piece from the piece view of captured piece.</p>
+</li>
+</ol>
+<p>We can implement it in code in the following way:</p>
+<div class="highlight"><pre><span></span><code><span class="mi">1</span> <span class="s s-Atom">def</span> <span class="nf">move_piece</span><span class="p">(</span><span class="s s-Atom">move</span><span class="p">,</span> <span class="s s-Atom">board_view</span><span class="p">,</span> <span class="s s-Atom">piece_view</span><span class="p">)</span><span class="s s-Atom">:</span>
+<span class="mi">2</span>     <span class="s s-Atom">piece</span><span class="p">,</span> <span class="s s-Atom">to_square</span> <span class="o">=</span> <span class="s s-Atom">move</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="s s-Atom">move</span><span class="p">[</span><span class="o">-</span><span class="mi">2</span><span class="s s-Atom">:</span><span class="p">]</span>
+<span class="mi">3</span>
+<span class="mi">4</span>     <span class="s s-Atom">capture</span> <span class="o">=</span> <span class="p">(</span><span class="s s-Atom">move</span><span class="p">[</span><span class="o">-</span><span class="mi">3</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;x&quot;</span><span class="p">)</span>
+<span class="mi">5</span>     <span class="s s-Atom">if</span> <span class="nn">capture</span><span class="p">:</span>
+<span class="mi">6</span>         <span class="s s-Atom">move</span> <span class="o">=</span> <span class="s s-Atom">move</span><span class="p">[:-</span><span class="mi">3</span><span class="p">]</span> <span class="o">+</span> <span class="s s-Atom">move</span><span class="p">[</span><span class="o">-</span><span class="mi">2</span><span class="s s-Atom">:</span><span class="p">]</span>
+<span class="mi">7</span>         <span class="s s-Atom">captured_piece</span> <span class="o">=</span> <span class="s s-Atom">board_view</span><span class="p">[</span><span class="s s-Atom">to_square</span><span class="p">]</span>
+<span class="mi">8</span>
+<span class="mi">9</span>     <span class="s s-Atom">if</span> <span class="nf">len</span><span class="p">(</span><span class="s s-Atom">move</span><span class="p">)</span> <span class="o">==</span> <span class="mi">5</span><span class="s s-Atom">:</span>
+<span class="mi">10</span>         <span class="s s-Atom">from_square</span> <span class="o">=</span> <span class="s s-Atom">move</span><span class="p">[</span><span class="mi">1</span><span class="s s-Atom">:</span><span class="mi">3</span><span class="p">]</span>
+<span class="mi">11</span>     <span class="s s-Atom">elif</span> <span class="nf">len</span><span class="p">(</span><span class="s s-Atom">piece_view</span><span class="p">[</span><span class="s s-Atom">piece</span><span class="p">])</span> <span class="o">==</span> <span class="mi">1</span><span class="s s-Atom">:</span>
+<span class="mi">12</span>         <span class="s s-Atom">from_square</span> <span class="o">=</span> <span class="s s-Atom">piece_view</span><span class="p">[</span><span class="s s-Atom">piece</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+<span class="mi">13</span>     <span class="nn">else</span><span class="p">:</span>
+<span class="mi">14</span>         <span class="s s-Atom">from_square</span> <span class="o">=</span> <span class="nf">get_from_square</span><span class="p">(</span><span class="s s-Atom">move</span><span class="p">,</span> <span class="s s-Atom">board_view</span><span class="p">,</span> <span class="s s-Atom">piece_view</span><span class="p">[</span><span class="s s-Atom">piece</span><span class="p">])</span>
+<span class="mi">15</span>
+<span class="mi">16</span>     <span class="s s-Atom">board_view</span><span class="p">[</span><span class="s s-Atom">from_square</span><span class="p">]</span> <span class="o">=</span> <span class="nv">SPACE</span>
+<span class="mi">17</span>     <span class="s s-Atom">board_view</span><span class="p">[</span><span class="s s-Atom">to_square</span><span class="p">]</span> <span class="o">=</span> <span class="s s-Atom">piece</span>
+<span class="mi">18</span>
+<span class="mi">19</span>     <span class="s s-Atom">piece_view</span><span class="p">[</span><span class="s s-Atom">piece</span><span class="p">].</span><span class="nf">append</span><span class="p">(</span><span class="s s-Atom">to_square</span><span class="p">)</span>
+<span class="mi">20</span>     <span class="s s-Atom">piece_view</span><span class="p">[</span><span class="s s-Atom">piece</span><span class="p">].</span><span class="nf">remove</span><span class="p">(</span><span class="s s-Atom">from_square</span><span class="p">)</span>
+<span class="mi">21</span>     <span class="s s-Atom">if</span> <span class="nn">capture</span><span class="p">:</span>
+<span class="mi">22</span>         <span class="s s-Atom">piece_view</span><span class="p">[</span><span class="s s-Atom">captured_piece</span><span class="p">].</span><span class="nf">remove</span><span class="p">(</span><span class="s s-Atom">to_square</span><span class="p">)</span>
+<span class="mi">23</span>
+<span class="mi">24</span>     <span class="s s-Atom">return</span> <span class="s s-Atom">board_view</span><span class="p">,</span> <span class="s s-Atom">piece_view</span>
+</code></pre></div>
+
+
+<p>Also, there is one more thing, there are two rooks, two knights and two bishops in the same time. So how do we know which piece we have to move exactly?</p>
+<p>Thatswhy we need to know what are the possible positions a particular piece could move or being more specific we should check whether the position we want to move a piece to, is in the possible positions it can move or not.</p>
+<p>This is the reason we learnt how the pieces move in the prerequisite for this problem. So let's apply our learning to this.</p>
+<div class="highlight"><pre><span></span><code><span class="w"> </span><span class="mi">1</span><span class="w">     </span><span class="n">moved_by</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">move_sep</span><span class="p">(</span><span class="n">fp</span><span class="p">,</span><span class="w"> </span><span class="n">tp</span><span class="p">)</span><span class="w"></span>
+<span class="w"> </span><span class="mi">2</span><span class="w"></span>
+<span class="w"> </span><span class="mi">3</span><span class="w">     </span><span class="n">def</span><span class="w"> </span><span class="n">can_rook_move</span><span class="p">()</span><span class="err">:</span><span class="w"></span>
+<span class="w"> </span><span class="mi">4</span><span class="w">         </span><span class="k">return</span><span class="w"> </span><span class="n">moved_by</span><span class="o">[</span><span class="n">0</span><span class="o">]</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="mi">0</span><span class="w"> </span><span class="ow">or</span><span class="w"> </span><span class="n">moved_by</span><span class="o">[</span><span class="n">1</span><span class="o">]</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="mi">0</span><span class="w"></span>
+<span class="w"> </span><span class="mi">5</span><span class="w"></span>
+<span class="w"> </span><span class="mi">6</span><span class="w">     </span><span class="n">def</span><span class="w"> </span><span class="n">can_knight_move</span><span class="p">()</span><span class="err">:</span><span class="w"></span>
+<span class="w"> </span><span class="mi">7</span><span class="w">         </span><span class="k">return</span><span class="w"> </span><span class="n">moved_by</span><span class="w"> </span><span class="ow">in</span><span class="w"> </span><span class="o">[</span><span class="n">(1, 2), (2, 1)</span><span class="o">]</span><span class="w"></span>
+<span class="w"> </span><span class="mi">8</span><span class="w"></span>
+<span class="w"> </span><span class="mi">9</span><span class="w">     </span><span class="n">def</span><span class="w"> </span><span class="n">can_bishop_move</span><span class="p">()</span><span class="err">:</span><span class="w"></span>
+<span class="w"> </span><span class="mi">10</span><span class="w">         </span><span class="k">return</span><span class="w"> </span><span class="n">moved_by</span><span class="o">[</span><span class="n">0</span><span class="o">]</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="n">moved_by</span><span class="o">[</span><span class="n">1</span><span class="o">]</span><span class="w"></span>
+<span class="w"> </span><span class="mi">11</span><span class="w"></span>
+<span class="w"> </span><span class="mi">12</span><span class="w">     </span><span class="n">def</span><span class="w"> </span><span class="n">can_queen_move</span><span class="p">()</span><span class="err">:</span><span class="w"></span>
+<span class="w"> </span><span class="mi">13</span><span class="w">         </span><span class="k">return</span><span class="w"> </span><span class="n">can_rook_move</span><span class="p">()</span><span class="w"> </span><span class="ow">or</span><span class="w"> </span><span class="n">can_bishop_move</span><span class="p">()</span><span class="w"></span>
+<span class="w"> </span><span class="mi">14</span><span class="w"></span>
+<span class="w"> </span><span class="mi">15</span><span class="w">     </span><span class="n">def</span><span class="w"> </span><span class="n">can_king_move</span><span class="p">()</span><span class="err">:</span><span class="w"></span>
+<span class="w"> </span><span class="mi">15</span><span class="w">         </span><span class="k">return</span><span class="w"> </span><span class="n">moved_by</span><span class="w"> </span><span class="ow">in</span><span class="w"> </span><span class="o">[</span><span class="n">(0, 1), (1, 0), (1, 1)</span><span class="o">]</span><span class="w"></span>
+<span class="w"> </span><span class="mi">17</span><span class="w"></span>
+<span class="w"> </span><span class="mi">18</span><span class="w">     </span><span class="k">return</span><span class="w"> </span><span class="err">{</span><span class="ss">&quot;R&quot;</span><span class="err">:</span><span class="w"> </span><span class="n">can_rook_move</span><span class="p">,</span><span class="w"> </span><span class="ss">&quot;N&quot;</span><span class="err">:</span><span class="w"> </span><span class="n">can_knight_move</span><span class="p">,</span><span class="w">  </span><span class="ss">&quot;B&quot;</span><span class="err">:</span><span class="w"> </span><span class="n">can_bishop_move</span><span class="p">,</span><span class="w"> </span><span class="err">\</span><span class="w"></span>
+<span class="w"> </span><span class="mi">19</span><span class="w">             </span><span class="ss">&quot;Q&quot;</span><span class="err">:</span><span class="w"> </span><span class="n">can_queen_move</span><span class="p">,</span><span class="w"> </span><span class="ss">&quot;K&quot;</span><span class="err">:</span><span class="w"> </span><span class="n">can_king_move</span><span class="err">}</span><span class="o">[</span><span class="n">piece</span><span class="o">]</span><span class="p">()</span><span class="w"></span>
+</code></pre></div>
+
+
+<p>But there may be a case where both the pieces are able to come to the specified situation. In such a case, we must resolve this ambiguity by checking if there is a piece of the same team in between the path to that position. If that is the case, that piece can't move to the specified position and the other piece will acquire that position. So we need to resolve this ambiguity too. It is not that difficult, we just have to check for the ranks and files being empty between those positions and can be handled easily.</p>
+<h2>Pawn Moves</h2>
+<p>Now comes the pawn moves. We can divide the pawn moves into four categories:</p>
+<ol>
+<li>
+<p>Regular pawn move.</p>
+</li>
+<li>
+<p>Capturing.</p>
+</li>
+<li>
+<p>Promotion.</p>
+</li>
+<li>
+<p>Enpassant.</p>
+</li>
+</ol>
+<p>We can identify them easily using Regex since we know the pattern they will follow (from the prerequisites).</p>
+<p>Keeping in mind, data is code, we can use this data given below for our code, processing it beforehand. </p>
+<div class="highlight"><pre><span></span><code><span class="err">  1 SPACE =&quot; &quot;</span>
+<span class="err">  2 WHITE, BLACK =&quot;P&quot;, &quot;p&quot;</span>
+<span class="err">  3 can_move_from = {WHITE: {&quot;3&quot;: [&quot;2&quot;], &quot;4&quot;: [&quot;3&quot;, &quot;2&quot;], &quot;5&quot;: [&quot;4&quot;], &quot;6&quot;:[&quot;5&quot;], &quot;7&quot;:[&quot;6&quot;]},\</span>
+<span class="err">  4                 BLACK: {&quot;6&quot;: [&quot;7&quot;], &quot;5&quot;: [&quot;6&quot;, &quot;7&quot;], &quot;4&quot;: [&quot;5&quot;], &quot;3&quot;: [&quot;4&quot;], &quot;2&quot;: [&quot;3&quot;]} }</span>
+<span class="err">  5</span>
+<span class="err">  6 can_capture_from = {WHITE: {&quot;3&quot;: &quot;2&quot;, &quot;4&quot;: &quot;3&quot;, &quot;5&quot;: &quot;4&quot;, &quot;6&quot;: &quot;5&quot;, &quot;7&quot;: &quot;6&quot;, &quot;8&quot;: &quot;7&quot;},\</span>
+<span class="err">  7                     BLACK: {&quot;6&quot;: &quot;7&quot;, &quot;5&quot;: &quot;6&quot;, &quot;4&quot;: &quot;5&quot;, &quot;3&quot;: &quot;4&quot;, &quot;2&quot;: &quot;3&quot;, &quot;1&quot;: &quot;2&quot;} }</span>
+<span class="err">  8 enpassant_captured = {WHITE: &quot;5&quot;, BLACK: &quot;4&quot;}</span>
+<span class="err">  9 promoted_from = {WHITE: &quot;7&quot;, BLACK: &quot;2&quot;}</span>
+</code></pre></div>
+
+
+<p>Talking about a regular pawn move or a capturing move, it is similar to a regular piece move and a regular capturing move we discussed before. We just have to update the board view and the piece view.</p>
+<p>When we talk about promotion, there are two cases:</p>
+<ol>
+<li>
+<p>Promotion with capturing</p>
+</li>
+<li>
+<p>Promotion without capturing</p>
+</li>
+</ol>
+<p>If it is a promotion with capturing, it would be a move like gxf8=Q or gxf8Q. So what we have to do is:</p>
+<ol>
+<li>
+<p>Remove the position the pawn is promoted to from the piece view of the captured piece.</p>
+</li>
+<li>
+<p>Add the piece the pawn is promoted to, to the board view of the position now.</p>
+</li>
+<li>
+<p>Add the position the pawn is promoted at to the piece view of the piece it is promoted to.</p>
+</li>
+<li>
+<p>Remove the previous position of pawn from the piece view of pawn.</p>
+</li>
+</ol>
+<p>Else, if the pawn promotes without capture, it would be a move like f8=Q or f8Q:
+So we can follow the same steps just skipping step 1.</p>
+<div class="highlight"><pre><span></span><code><span class="w"> </span><span class="mi">1</span><span class="w"> </span><span class="n">def</span><span class="w"> </span><span class="n">promote</span><span class="p">(</span><span class="n">move</span><span class="p">,</span><span class="w"> </span><span class="n">board_view</span><span class="p">,</span><span class="w"> </span><span class="n">piece_view</span><span class="p">)</span><span class="err">:</span><span class="w"></span>
+<span class="w"> </span><span class="mi">2</span><span class="w">     </span><span class="k">if</span><span class="w"> </span><span class="ss">&quot;x&quot;</span><span class="w"> </span><span class="ow">in</span><span class="w"> </span><span class="nl">move</span><span class="p">:</span><span class="w"></span>
+<span class="w"> </span><span class="mi">3</span><span class="w">         </span><span class="err">#</span><span class="w"> </span><span class="n">Move</span><span class="w"> </span><span class="ow">like</span><span class="w"> </span><span class="n">gxf8</span><span class="o">=</span><span class="n">Q</span><span class="w"> </span><span class="ow">or</span><span class="w"> </span><span class="n">gxf8Q</span><span class="w"></span>
+<span class="w"> </span><span class="mi">4</span><span class="w">         </span><span class="n">pawn</span><span class="p">,</span><span class="w"> </span><span class="n">from_file</span><span class="p">,</span><span class="w"> </span><span class="n">promoted_at</span><span class="p">,</span><span class="w"> </span><span class="n">promoted_to</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">move</span><span class="o">[</span><span class="n">0</span><span class="o">]</span><span class="p">,</span><span class="w"> </span><span class="n">move</span><span class="o">[</span><span class="n">1</span><span class="o">]</span><span class="p">,</span><span class="w"> </span><span class="n">move</span><span class="o">[</span><span class="n">3:5</span><span class="o">]</span><span class="p">,</span><span class="w"> </span><span class="n">move</span><span class="o">[</span><span class="n">-1</span><span class="o">]</span><span class="w"></span>
+<span class="w"> </span><span class="mi">5</span><span class="w">         </span><span class="n">captured_piece</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">board_view</span><span class="o">[</span><span class="n">promoted_at</span><span class="o">]</span><span class="w"></span>
+<span class="w"> </span><span class="mi">6</span><span class="w">         </span><span class="n">piece_view</span><span class="o">[</span><span class="n">captured_piece</span><span class="o">]</span><span class="p">.</span><span class="n">remove</span><span class="p">(</span><span class="n">promoted_at</span><span class="p">)</span><span class="w"></span>
+<span class="w"> </span><span class="mi">7</span><span class="w">     </span><span class="k">else</span><span class="err">:</span><span class="w"></span>
+<span class="w"> </span><span class="mi">8</span><span class="w">         </span><span class="err">#</span><span class="w"> </span><span class="n">Move</span><span class="w"> </span><span class="ow">like</span><span class="w"> </span><span class="n">f8</span><span class="o">=</span><span class="n">Q</span><span class="w"> </span><span class="ow">or</span><span class="w"> </span><span class="n">f8Q</span><span class="w"></span>
+<span class="w"> </span><span class="mi">9</span><span class="w">         </span><span class="n">pawn</span><span class="p">,</span><span class="w"> </span><span class="n">from_file</span><span class="p">,</span><span class="w"> </span><span class="n">promoted_at</span><span class="p">,</span><span class="w"> </span><span class="n">promoted_to</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">move</span><span class="o">[</span><span class="n">0</span><span class="o">]</span><span class="p">,</span><span class="w"> </span><span class="n">move</span><span class="o">[</span><span class="n">1</span><span class="o">]</span><span class="p">,</span><span class="w"> </span><span class="n">move</span><span class="o">[</span><span class="n">1:3</span><span class="o">]</span><span class="p">,</span><span class="w"> </span><span class="n">move</span><span class="o">[</span><span class="n">-1</span><span class="o">]</span><span class="w"></span>
+<span class="w"> </span><span class="mi">10</span><span class="w"></span>
+<span class="w"> </span><span class="mi">11</span><span class="w">     </span><span class="n">board_view</span><span class="o">[</span><span class="n">promoted_at</span><span class="o">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">promoted_to</span><span class="w"></span>
+<span class="w"> </span><span class="mi">12</span><span class="w">     </span><span class="n">piece_view</span><span class="o">[</span><span class="n">promoted_to</span><span class="o">]</span><span class="p">.</span><span class="n">append</span><span class="p">(</span><span class="n">promoted_at</span><span class="p">)</span><span class="w"></span>
+<span class="w"> </span><span class="mi">13</span><span class="w"></span>
+<span class="w"> </span><span class="mi">14</span><span class="w">     </span><span class="n">from_square</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">from_file</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">promoted_from</span><span class="o">[</span><span class="n">pawn</span><span class="o">]</span><span class="w"></span>
+<span class="w"> </span><span class="mi">15</span><span class="w">     </span><span class="n">piece_view</span><span class="o">[</span><span class="n">pawn</span><span class="o">]</span><span class="p">.</span><span class="n">remove</span><span class="p">(</span><span class="n">from_square</span><span class="p">)</span><span class="w"></span>
+<span class="w"> </span><span class="mi">16</span><span class="w"></span>
+<span class="w"> </span><span class="mi">17</span><span class="w">     </span><span class="k">return</span><span class="w"> </span><span class="n">board_view</span><span class="p">,</span><span class="w"> </span><span class="n">piece_view</span><span class="w"></span>
+</code></pre></div>
+
+
+<p>Now, if the move is an enpassant, we can use the data we have processed beforehand to identify the position the pawn comes from and easily update the board view and piece view by removing the pawn of enemy team from the board and acquiring the position it may have moved. This is depicted in the code below:</p>
+<div class="highlight"><pre><span></span><code><span class="w"> </span><span class="mi">69</span><span class="w"> </span><span class="n">def</span><span class="w"> </span><span class="n">make_enpassant</span><span class="p">(</span><span class="n">move</span><span class="p">,</span><span class="w"> </span><span class="n">board_view</span><span class="p">,</span><span class="w"> </span><span class="n">piece_view</span><span class="p">)</span><span class="err">:</span><span class="w"></span>
+<span class="w"> </span><span class="mi">70</span><span class="w">      </span><span class="n">move</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">move</span><span class="p">.</span><span class="nf">replace</span><span class="p">(</span><span class="ss">&quot;x&quot;</span><span class="p">,</span><span class="w"> </span><span class="ss">&quot;&quot;</span><span class="p">)</span><span class="w"></span>
+<span class="w"> </span><span class="mi">71</span><span class="w">      </span><span class="n">pawn</span><span class="p">,</span><span class="w"> </span><span class="n">from_file</span><span class="p">,</span><span class="w"> </span><span class="n">to_square</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">move</span><span class="o">[</span><span class="n">0</span><span class="o">]</span><span class="p">,</span><span class="w"> </span><span class="n">move</span><span class="o">[</span><span class="n">1</span><span class="o">]</span><span class="p">,</span><span class="w"> </span><span class="n">move</span><span class="o">[</span><span class="n">2:4</span><span class="o">]</span><span class="w"></span>
+<span class="w"> </span><span class="mi">72</span><span class="w">      </span><span class="n">to_file</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">to_square</span><span class="o">[</span><span class="n">0</span><span class="o">]</span><span class="w"></span>
+<span class="w"> </span><span class="mi">73</span><span class="w"></span>
+<span class="w"> </span><span class="mi">74</span><span class="w">      </span><span class="n">from_square</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">from_file</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">enpassant_captured</span><span class="o">[</span><span class="n">pawn</span><span class="o">]</span><span class="w"></span>
+<span class="w"> </span><span class="mi">75</span><span class="w">      </span><span class="n">captured_pawn_square</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">to_file</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">enpassant_captured</span><span class="o">[</span><span class="n">pawn</span><span class="o">]</span><span class="w"></span>
+<span class="w"> </span><span class="mi">76</span><span class="w"></span>
+<span class="w"> </span><span class="mi">77</span><span class="w">      </span><span class="n">board_view</span><span class="o">[</span><span class="n">to_square</span><span class="o">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">pawn</span><span class="w"></span>
+<span class="w"> </span><span class="mi">78</span><span class="w">      </span><span class="n">board_view</span><span class="o">[</span><span class="n">from_square</span><span class="o">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">SPACE</span><span class="w"></span>
+<span class="w"> </span><span class="mi">79</span><span class="w">      </span><span class="n">board_view</span><span class="o">[</span><span class="n">captured_pawn_square</span><span class="o">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">SPACE</span><span class="w"></span>
+<span class="w"> </span><span class="mi">80</span><span class="w"></span>
+<span class="w"> </span><span class="mi">81</span><span class="w">      </span><span class="n">piece_view</span><span class="o">[</span><span class="n">pawn</span><span class="o">]</span><span class="p">.</span><span class="n">remove</span><span class="p">(</span><span class="n">from_square</span><span class="p">)</span><span class="w"></span>
+<span class="w"> </span><span class="mi">82</span><span class="w">      </span><span class="n">piece_view</span><span class="o">[</span><span class="n">pawn</span><span class="o">]</span><span class="p">.</span><span class="n">append</span><span class="p">(</span><span class="n">to_square</span><span class="p">)</span><span class="w"></span>
+<span class="w"> </span><span class="mi">83</span><span class="w">      </span><span class="n">piece_view</span><span class="o">[</span><span class="n">pawn.swapcase()</span><span class="o">]</span><span class="p">.</span><span class="n">remove</span><span class="p">(</span><span class="n">captured_pawn_square</span><span class="p">)</span><span class="w"></span>
+<span class="w"> </span><span class="mi">84</span><span class="w"></span>
+<span class="w"> </span><span class="mi">85</span><span class="w">      </span><span class="k">return</span><span class="w"> </span><span class="n">board_view</span><span class="p">,</span><span class="w"> </span><span class="n">piece_view</span><span class="w"></span>
+</code></pre></div>
+
+
+<p>Now, since all the movements of the pieces has been discussed, we can easily find out the final position of all the pieces after the game ends.</p>
+<p>And this has been our mission all along.</p>
+<div id="disqus_thread"></div>
+
+<script>
+
+/**
+*  RECOMMENDED CONFIGURATION VARIABLES: EDIT AND UNCOMMENT THE SECTION BELOW TO INSERT DYNAMIC VALUES FROM YOUR PLATFORM OR CMS.
+*  LEARN WHY DEFINING THESE VARIABLES IS IMPORTANT: https://disqus.com/admin/universalcode/#configuration-variables*/
+/*
+var disqus_config = function () {
+this.page.url = PAGE_URL;  // Replace PAGE_URL with your page's canonical URL variable
+this.page.identifier = PAGE_IDENTIFIER; // Replace PAGE_IDENTIFIER with your page's unique identifier variable
+};
+*/
+(function() { // DON'T EDIT BELOW THIS LINE
+var d = document, s = d.createElement('script');
+s.src = 'https://coderita.disqus.com/embed.js';
+s.setAttribute('data-timestamp', +new Date());
+(d.head || d.body).appendChild(s);
+})();
+</script>
+
+<noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+        </div>
+    </section>
+        </div>
+        <div class="col-sm-3" id="sidebar">
+            <aside>
+<!-- Sidebar -->
+<section class="well well-sm">
+  <ul class="list-group list-group-flush">
+
+<!-- Sidebar/Social -->
+<li class="list-group-item">
+  <h4><i class="fa fa-home fa-lg"></i><span class="icon-label">Social</span></h4>
+  <ul class="list-group" id="social">
+    <li class="list-group-item"><a href="https://www.linkedin.com/in/mansi-sharma-617521191/"><i class="fa fa-linkedin-square fa-lg"></i> LinkedIn</a></li>
+    <li class="list-group-item"><a href="https://twitter.com/mansi035?s=09"><i class="fa fa-twitter-square fa-lg"></i> Twitter</a></li>
+  </ul>
+</li>
+<!-- End Sidebar/Social -->
+
+<!-- Sidebar/Links -->
+<li class="list-group-item">
+  <h4><i class="fa fa-external-link-square fa-lg"></i><span class="icon-label">Links</span></h4>
+  <ul class="list-group" id="links">
+    <li class="list-group-item">
+      <a href="https://www.usenix.org/legacy/publications/library/proceedings/sf94/full_papers/johnson.html" target="_blank">Objecting To Objects: Main Article</a>
+    </li>
+    <li class="list-group-item">
+      <a href="http://steve-yegge.blogspot.com/2006/03/execution-in-kingdom-of-nouns.html" target="_blank">Execution in the Kingdom of Nouns</a>
+    </li>
+    <li class="list-group-item">
+      <a href="http://www.chesscorner.com/index.html" target="_blank">Understanding Chess</a>
+    </li>
+  </ul>
+</li>
+<!-- End Sidebar/Links -->
+  </ul>
+</section>
+<!-- End Sidebar -->            </aside>
+        </div>
+    </div>
+</div>
+<!-- End Content Container -->
+
+<footer>
+   <div class="container">
+      <hr>
+      <div class="row">
+         <div class="col-xs-10">&copy; 2020 Mansi Sharma
+            &middot; Powered by <a href="https://github.com/getpelican/pelican-themes/tree/master/pelican-bootstrap3" target="_blank">pelican-bootstrap3</a>,
+            <a href="http://docs.getpelican.com/" target="_blank">Pelican</a>,
+            <a href="http://getbootstrap.com" target="_blank">Bootstrap</a>         </div>
+         <div class="col-xs-2"><p class="pull-right"><i class="fa fa-arrow-up"></i> <a href="#">Back to top</a></p></div>
+      </div>
+   </div>
+</footer>
+<script src="/theme/js/jquery.min.js"></script>
+
+<!-- Include all compiled plugins (below), or include individual files as needed -->
+<script src="/theme/js/bootstrap.min.js"></script>
+
+<!-- Enable responsive features in IE8 with Respond.js (https://github.com/scottjehl/Respond) -->
+<script src="/theme/js/respond.min.js"></script>
+
+
+
+
+</body>
+</html>
